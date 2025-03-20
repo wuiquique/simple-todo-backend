@@ -71,7 +71,15 @@ def create_project(db: Session, project: schemas.ProjectCreate):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al crear proyecto: {str(e)}")
-    return db_project
+
+    result = {
+        "id": db_project.id,
+        "name": db_project.name,
+        "userId": db_project.userId,
+        "task_total": 0,
+        "task_completed": 0
+    }
+    return result
 
 def delete_project(db: Session, projectId: int):
     project = db.query(models.Project).filter(models.Project.id == projectId).first()
