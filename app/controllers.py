@@ -112,6 +112,39 @@ def create_task(db: Session, task: schemas.TaskCreate):
         raise HTTPException(status_code=500, detail=f"Error al crear tarea: {str(e)}")
     return db_task
 
+def toogle_task(db: Session, taskId: int):
+    task = db.query(models.Task).filter(models.Task.id == taskId).first()
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Tarea no encontrada")
+
+    try:
+        task.isCompleted = not task.isCompleted
+        db.commit()
+        db.refresh(task)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error al actualizar tarea: {str(e)}")
+
+    return task
+
+
+def toogle_all_tasks(db: Session, projectId: int, isCompleted: bool):
+    tasks = db.query(models.Task).filter(models.Task.projectId == projectId).all()
+
+    if not tasks:
+        raise HTTPException(status_code=404, detail="No se encontraron tareas para este proyecto")
+
+    try:
+        for task in tasks:
+            task.isCompleted = isCompleted
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error al actualizar tareas: {str(e)}")
+
+    return {"message": f"Tareas del proyecto {projectId} actualizadas"}
+
 def delete_task(db: Session, taskId: int):
     task = db.query(models.Task).filter(models.Task.id == taskId).first()
     if not task:

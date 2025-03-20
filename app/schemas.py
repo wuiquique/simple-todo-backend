@@ -16,3 +16,6 @@ class TaskCreate(BaseModel):
     isCompleted: bool
     due: str
     projectId: int
+
+class ToggleTask(BaseModel):
+    isCompleted: bool

@@ -48,6 +48,14 @@ def get_tasks(projectId: int, db: Session = Depends(get_db)):
 def create_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
     return controllers.create_task(db=db, task=task)
 
+@router.patch("/tasks/{taskId}")
+def toogle_task(taskId: int, db: Session = Depends(get_db)):
+    return controllers.toogle_task(db=db, taskId=taskId)
+
+@router.patch("/tasks/{projectId}/toggle")
+def toggle_all_tasks(projectId: int, toggle: schemas.ToggleTask, db: Session = Depends(get_db)):
+    return controllers.toogle_all_tasks(db=db, projectId=projectId, isCompleted=toggle.isCompleted)
+
 @router.delete("/tasks/{taskId}")
 def delete_task(taskId: int, db: Session = Depends(get_db)):
     return controllers.delete_task(db=db, taskId=taskId)
